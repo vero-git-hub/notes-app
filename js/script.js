@@ -48,14 +48,21 @@ document.addEventListener("DOMContentLoaded", function() {
             const cell = document.createElement("td");
             if (key === "icons") {
                 data[key].forEach(iconClass => {
-                const icon = document.createElement("i");
-                icon.className = iconClass;
-                cell.appendChild(icon);
+                    const icon = document.createElement("i");
+                    icon.className = iconClass;
+                    if (iconClass.includes("bi-trash-fill")) {
+                        icon.id = "deleteIcon";
+                        icon.addEventListener("click", function() {
+                            const parentRow = this.closest("tr");
+                            parentRow.remove();
+                        });
+                    }
+
+                    cell.appendChild(icon);
                 });
             } else {
                 cell.textContent = data[key];
             }
-
             row.appendChild(cell);
         }
         return row;
