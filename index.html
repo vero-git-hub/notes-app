@@ -28,32 +28,67 @@
           </tbody>
         </table>
         <div class="d-flex justify-content-end">
-            <button class="btn btn-primary">Create Note</button>
+            <button id="create-note-btn" class="btn btn-primary">Create Note</button>
         </div>
 
         <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Note Category</th>
-            <th>Active</th>
-            <th>Archived</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Row 1, Column 1</td>
-            <td>Row 1, Column 2</td>
-            <td>Row 1, Column 3</td>
-          </tr>
-          <tr>
-            <td>Row 2, Column 1</td>
-            <td>Row 2, Column 2</td>
-            <td>Row 2, Column 3</td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
+            <thead>
+                <tr>
+                    <th>Note Category</th>
+                    <th>Active</th>
+                    <th>Archived</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Row 1, Column 1</td>
+                    <td>Row 1, Column 2</td>
+                    <td>Row 1, Column 3</td>
+                </tr>
+                <tr>
+                    <td>Row 2, Column 1</td>
+                    <td>Row 2, Column 2</td>
+                    <td>Row 2, Column 3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-      <script src="js/script.js"></script>
+    <div class="modal" id="addNoteModal" tabindex="-1">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalButton"></button>
+            </div>
+            <div class="modal-body">
+            <form id="noteForm">
+                <div class="mb-3">
+                    <label for="noteName" class="form-label">Note Name</label>
+                    <input type="text" class="form-control" id="noteName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="noteCategory" class="form-label">Category</label>
+                    <select class="form-select" id="noteCategory">
+                        <option value="Task">Task</option>
+                        <option value="Random Thought">Random Thought</option>
+                        <option value="Idea">Idea</option>
+                    </select>
+                    </div>
+                <div class="mb-3">
+                    <label for="noteContent" class="form-label">Note Content</label>
+                    <textarea class="form-control" id="noteContent" rows="3" required></textarea>
+                </div>
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelNoteBtn">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
