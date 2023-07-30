@@ -41,6 +41,7 @@ const rowData = [
         ]
     }
 ];
+const archiveData = [];
 
 function updateArchiveTable() {
     const categories = ["Task", "Random Thought", "Idea"];
@@ -87,6 +88,13 @@ document.addEventListener("DOMContentLoaded", function() {
         archiveTableBody.appendChild(row);
     });
 
+    function handleArchiveIconClick(rowIndex) {
+        const archivedRow = rowData.splice(rowIndex, 1)[0];
+        archiveData.push(archivedRow);
+
+        updateTable();
+        updateArchiveTable();
+    }
 
     function createTableRow(data, index) {
         const row = document.createElement("tr");
@@ -124,6 +132,14 @@ document.addEventListener("DOMContentLoaded", function() {
                           editNoteModal._element.setAttribute("data-row-index", rowIndex);
 
                           editNoteModal.show();
+                        });
+                    }
+
+                    if (iconClass.includes("bi-archive-fill")) {
+                        icon.addEventListener("click", function() {
+                            const parentRow = this.closest("tr");
+                            const rowIndex = parentRow.getAttribute("data-index");
+                            handleArchiveIconClick(rowIndex);
                         });
                     }
 
