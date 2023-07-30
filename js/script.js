@@ -1,6 +1,64 @@
-const tableBody = document.getElementById("table-body");
+const mainTable = document.getElementById("mainTable");
+const tableBody = mainTable.querySelector("tbody");
 const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
 const editNoteModal = new bootstrap.Modal(document.getElementById("editNoteModal"));
+
+const rowData = [
+    {
+        name: "Row 1, Column 1",
+        created: "Row 1, Column 2",
+        category: "Task",
+        content: "Row 1, Column 4",
+        dates: "Row 1, Column 5",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    },
+    {
+        name: "Row 2, Column 1",
+        created: "Row 2, Column 2",
+        category: "Task",
+        content: "Row 2, Column 4",
+        dates: "Row 2, Column 5",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    },
+    {
+        name: "Row 3, Column 1",
+        created: "Row 3, Column 2",
+        category: "Idea",
+        content: "Row 3, Column 4",
+        dates: "Row 3, Column 5",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    }
+];
+
+function updateArchiveTable() {
+    const categories = ["Task", "Random Thought", "Idea"];
+    const archiveTable = document.getElementById("archiveTable");
+    const archiveTableBody = archiveTable.querySelector("tbody");
+
+    categories.forEach(category => {
+        const row = Array.from(archiveTableBody.children).find(row => row.cells[0].textContent === category);
+        if (row) {
+            const noteCount = countNotesForCategory(category);
+            row.cells[1].textContent = noteCount;
+        }
+    });
+}
+
+function countNotesForCategory(category) {
+    return rowData.filter(data => data.category === category).length;
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     const categories = ["Task", "Random Thought", "Idea"];
@@ -19,51 +77,16 @@ document.addEventListener("DOMContentLoaded", function() {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.textContent = category;
-
         row.appendChild(cell);
+
+        const noteCountCell = document.createElement("td");
+        noteCountCell.textContent = countNotesForCategory(category);
+
+        row.appendChild(noteCountCell);
 
         archiveTableBody.appendChild(row);
     });
 
-    const rowData = [
-        {
-            name: "Row 1, Column 1",
-            created: "Row 1, Column 2",
-            category: "Row 1, Column 3",
-            content: "Row 1, Column 4",
-            dates: "Row 1, Column 5",
-            icons: [
-                "bi bi-pencil-square",
-                "bi bi-archive-fill",
-                "bi bi-trash-fill"
-            ]
-        },
-        {
-            name: "Row 2, Column 1",
-            created: "Row 2, Column 2",
-            category: "Row 2, Column 3",
-            content: "Row 2, Column 4",
-            dates: "Row 2, Column 5",
-            icons: [
-                "bi bi-pencil-square",
-                "bi bi-archive-fill",
-                "bi bi-trash-fill"
-            ]
-        },
-        {
-            name: "Row 3, Column 1",
-            created: "Row 3, Column 2",
-            category: "Row 3, Column 3",
-            content: "Row 3, Column 4",
-            dates: "Row 3, Column 5",
-            icons: [
-                "bi bi-pencil-square",
-                "bi bi-archive-fill",
-                "bi bi-trash-fill"
-            ]
-        }
-
-    ];
 
     function createTableRow(data, index) {
         const row = document.createElement("tr");
@@ -93,13 +116,13 @@ document.addEventListener("DOMContentLoaded", function() {
                           const parentRow = this.closest("tr");
                           const rowIndex = parentRow.getAttribute("data-index");
                           const noteData = rowData[rowIndex];
-          
+
                           document.getElementById("editNoteName").value = noteData.name;
                           document.getElementById("editNoteCategory").value = noteData.category;
                           document.getElementById("editNoteContent").value = noteData.content;
 
                           editNoteModal._element.setAttribute("data-row-index", rowIndex);
-          
+
                           editNoteModal.show();
                         });
                     }
@@ -218,5 +241,13 @@ document.addEventListener("DOMContentLoaded", function() {
         editNoteModal.hide();
     });
 
+    const observer = new MutationObserver(() => {
+        updateArchiveTable();
+    });
+
+    const observerConfig = { childList: true, subtree: true };
+    observer.observe(mainTable, observerConfig);
+
     updateTable();
+    updateArchiveTable();
 });
