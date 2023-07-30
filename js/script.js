@@ -110,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const noteCategorySelect = document.getElementById("noteCategory");
         noteCategorySelect.value = "Task";
 
-        const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
         addNoteModal.show();
     });
 

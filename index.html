@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -55,32 +54,32 @@
         </table>
     </div>
 
-    <div class="modal" id="addNoteModal" tabindex="-1">
+    <div class="modal" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Note</h5>
+                    <h5 class="modal-title" id="addNoteModalLabel">Add Note</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalButton"></button>
                 </div>
                 <div class="modal-body">
-                <form id="noteForm">
-                    <div class="mb-3">
-                        <label for="noteName" class="form-label">Note Name</label>
-                        <input type="text" class="form-control" id="noteName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="noteCategory" class="form-label">Category</label>
-                        <select class="form-select" id="noteCategory">
-                            <option value="Task">Task</option>
-                            <option value="Random Thought">Random Thought</option>
-                            <option value="Idea">Idea</option>
-                        </select>
+                    <form id="noteForm">
+                        <div class="mb-3">
+                            <label for="noteName" class="form-label">Note Name</label>
+                            <input type="text" class="form-control" id="noteName">
                         </div>
-                    <div class="mb-3">
-                        <label for="noteContent" class="form-label">Note Content</label>
-                        <textarea class="form-control" id="noteContent" rows="3" required></textarea>
-                    </div>
-                </form>
+                        <div class="mb-3">
+                            <label for="noteCategory" class="form-label">Category</label>
+                            <select class="form-select" id="noteCategory">
+                                <option value="Task">Task</option>
+                                <option value="Random Thought">Random Thought</option>
+                                <option value="Idea">Idea</option>
+                            </select>
+                            </div>
+                        <div class="mb-3">
+                            <label for="noteContent" class="form-label">Note Content</label>
+                            <textarea class="form-control" id="noteContent" rows="3"></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelNoteBtn">Cancel</button>
@@ -90,43 +89,41 @@
         </div>
     </div>
 
-    <div class="modal" id="editNoteModal" tabindex="-1" role="dialog" aria-labelledby="editNoteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="editNoteModalLabel">Edit Note</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeEditModalButton">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <form id="editNoteForm">
-                <div class="form-group">
-                  <label for="editNoteName">Name</label>
-                  <input type="text" class="form-control" id="editNoteName" required>
+    <div class="modal" id="editNoteModal" tabindex="-1" aria-labelledby="editNoteModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editNoteModalLabel">Edit Note</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeEditModalButton"></button>
                 </div>
-                <div class="form-group">
-                  <label for="editNoteCategory">Category</label>
-                  <select class="form-control" id="editNoteCategory">
-                    <option value="Task">Task</option>
-                    <option value="Random Thought">Random Thought</option>
-                    <option value="Idea">Idea</option>
-                  </select>
+                <div class="modal-body">
+                    <form id="editNoteForm">
+                        <div class="mb-3">
+                          <label for="editNoteName" class="form-label">Name</label>
+                          <input type="text" class="form-control" id="editNoteName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNoteCategory" class="form-label">Category</label>
+                            <select class="form-select" id="editNoteCategory">
+                                <option value="Task">Task</option>
+                                <option value="Random Thought">Random Thought</option>
+                                <option value="Idea">Idea</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNoteContent" class="form-label">Content</label>
+                            <textarea class="form-control" id="editNoteContent" rows="3"></textarea>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                  <label for="editNoteContent">Content</label>
-                  <textarea class="form-control" id="editNoteContent" rows="3" required></textarea>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelEditNoteButton">Cancel</button>
-              <button type="button" class="btn btn-primary" id="saveEditedNoteBtn">Save Edited Note</button>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelEditNoteButton">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditedNoteBtn">Save Edited Note</button>
             </div>
           </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
