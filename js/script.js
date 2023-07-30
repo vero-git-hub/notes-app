@@ -9,7 +9,7 @@ const rowData = [
         created: "Row 1, Column 2",
         category: "Task",
         content: "Row 1, Column 4",
-        dates: "Row 1, Column 5",
+        dates: "",
         icons: [
             "bi bi-pencil-square",
             "bi bi-archive-fill",
@@ -21,7 +21,7 @@ const rowData = [
         created: "Row 2, Column 2",
         category: "Task",
         content: "Row 2, Column 4",
-        dates: "Row 2, Column 5",
+        dates: "",
         icons: [
             "bi bi-pencil-square",
             "bi bi-archive-fill",
@@ -33,7 +33,55 @@ const rowData = [
         created: "Row 3, Column 2",
         category: "Idea",
         content: "Row 3, Column 4",
-        dates: "Row 3, Column 5",
+        dates: "",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ],
+    },
+    {
+        name: "Row 4, Column 1",
+        created: "Row 4, Column 2",
+        category: "Random Thought",
+        content: "Row 4, Column 4",
+        dates: "",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    },
+    {
+        name: "Row 5, Column 1",
+        created: "Row 5, Column 2",
+        category: "Random Thought",
+        content: "Row 5, Column 4",
+        dates: "",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    },
+    {
+        name: "Row 6, Column 1",
+        created: "Row 6, Column 2",
+        category: "Random Thought",
+        content: "Row 6, Column 4",
+        dates: "",
+        icons: [
+            "bi bi-pencil-square",
+            "bi bi-archive-fill",
+            "bi bi-trash-fill"
+        ]
+    },
+    {
+        name: "Row 7, Column 1",
+        created: "Row 7, Column 2",
+        category: "Idea",
+        content: "Row 7, Column 4",
+        dates: "",
         icons: [
             "bi bi-pencil-square",
             "bi bi-archive-fill",
@@ -43,13 +91,13 @@ const rowData = [
 ];
 const archiveData = [];
 
-function updateArchiveTable() {
+function updateCountTable() {
     const categories = ["Task", "Random Thought", "Idea"];
-    const archiveTable = document.getElementById("archiveTable");
-    const archiveTableBody = archiveTable.querySelector("tbody");
+    const countTable = document.getElementById("countTable");
+    const countTableBody = countTable.querySelector("tbody");
 
     categories.forEach(category => {
-        const row = Array.from(archiveTableBody.children).find(row => row.cells[0].textContent === category);
+        const row = Array.from(countTableBody.children).find(row => row.cells[0].textContent === category);
         if (row) {
             const noteCount = countNotesForCategory(category, rowData);
             const archiveNoteCount = countNotesForCategory(category, archiveData);
@@ -67,8 +115,30 @@ document.addEventListener("DOMContentLoaded", function() {
     const categories = ["Task", "Random Thought", "Idea"];
     const noteCategorySelect = document.getElementById("noteCategory");
     const editNoteCategorySelect = document.getElementById("editNoteCategory");
+    const countTable = document.getElementById("countTable");
+    const countTableBody  = countTable.querySelector("tbody");
+
+    const showArchiveTableButton = document.getElementById("showArchiveTable");
     const archiveTable = document.getElementById("archiveTable");
-    const archiveTableBody  = archiveTable.querySelector("tbody");
+    const hiddenMessage = document.getElementById("hiddenMessage");
+
+    let isArchiveTableVisible = false;
+
+    showArchiveTableButton.addEventListener("click", function() {
+        isArchiveTableVisible = !isArchiveTableVisible;
+
+        if (isArchiveTableVisible) {
+            archiveTable.style.display = "table";
+            hiddenMessage.style.display = "none";
+            showArchiveTableButton.classList.remove("bi-eye-fill");
+            showArchiveTableButton.classList.add("bi-eye-slash-fill");
+        } else {
+            archiveTable.style.display = "none";
+            hiddenMessage.style.display = "block";
+            showArchiveTableButton.classList.remove("bi-eye-slash-fill");
+            showArchiveTableButton.classList.add("bi-eye-fill");
+        }
+    });
 
     categories.forEach(category => {
         const option = document.createElement("option");
@@ -91,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
         row.appendChild(noteCountCell);
         row.appendChild(archivedNoteCountCell);
 
-        archiveTableBody.appendChild(row);
+        countTableBody.appendChild(row);
     });
 
     function createTableRow(data, index) {
@@ -141,7 +211,6 @@ document.addEventListener("DOMContentLoaded", function() {
                             handleArchiveIconClick(rowIndex);
                         });
                     }
-                    console.log(archiveData);
 
                     cell.appendChild(icon);
                 });
@@ -169,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         updateTable();
         updateArchiveTable();
+        updateCountTable();
     }
 
     const createNoteButton = document.getElementById("create-note-btn");
@@ -266,12 +336,55 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     const observer = new MutationObserver(() => {
-        updateArchiveTable();
+        updateCountTable();
     });
 
     const observerConfig = { childList: true, subtree: true };
     observer.observe(mainTable, observerConfig);
 
+    function createArchiveTableRow(data, index) {
+        const row = document.createElement("tr");
+
+        for (const key in data) {
+            if(key!=="icons"){
+                const cell = document.createElement("td");
+                cell.textContent = data[key];
+                row.appendChild(cell);
+            }
+
+        }
+
+        const unarchiveIcon = document.createElement("i");
+        unarchiveIcon.className = "bi bi-arrow-counterclockwise";
+        unarchiveIcon.addEventListener("click", function() {
+            const rowIndex = archiveData.indexOf(data);
+            const unarchivedRow = archiveData.splice(rowIndex, 1)[0];
+            rowData.push(unarchivedRow);
+            updateTable();
+            updateArchiveTable();
+            updateCountTable();
+        });
+
+        const iconCell = document.createElement("td");
+        iconCell.appendChild(unarchiveIcon);
+        row.appendChild(iconCell);
+
+        return row;
+    }
+
+    function updateArchiveTable() {
+        const archiveTable = document.getElementById("archiveTable");
+        const archiveTableBody = archiveTable.querySelector("tbody");
+
+        archiveTableBody.innerHTML = "";
+
+        archiveData.forEach((data, index) => {
+            const row = createArchiveTableRow(data, index);
+            archiveTableBody.appendChild(row);
+        });
+    }
+
     updateTable();
+    updateCountTable();
     updateArchiveTable();
 });

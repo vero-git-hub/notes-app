@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="container">
+        <h2>Active Note Table</h2>
         <table class="table table-striped" id="mainTable">
           <thead>
             <tr>
@@ -24,24 +25,43 @@
               </th>
             </tr>
           </thead>
-          <tbody id="table-body">
+          <tbody>
           </tbody>
         </table>
         <div class="d-flex justify-content-end">
             <button id="create-note-btn" class="btn btn-primary">Create Note</button>
         </div>
 
-        <table class="table table-striped" id="archiveTable">
+        <h2>Count Note Table</h2>
+        <table class="table table-striped" id="countTable">
             <thead>
                 <tr>
                     <th>Note Category</th>
                     <th>Active</th>
-                    <th>Archived</th>
+                    <th>Archived <i class="bi bi-eye-fill" id="showArchiveTable"></i></th>
                 </tr>
             </thead>
             <tbody id="tbody">
             </tbody>
         </table>
+
+        <h2>Archive Note Table</h2>
+        <p id="hiddenMessage">The table is hidden. Click on the eye next to "Archived" to open the table.</p>
+        <table class="table table-striped" id="archiveTable" style="display:none;">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Category</th>
+                <th>Content</th>
+                <th>Dates</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
     </div>
 
     <div class="modal" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel">
