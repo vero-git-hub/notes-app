@@ -31,7 +31,7 @@
             <button id="create-note-btn" class="btn btn-primary">Create Note</button>
         </div>
 
-        <table class="table table-striped">
+        <table class="table table-striped" id="archiveTable">
             <thead>
                 <tr>
                     <th>Note Category</th>
@@ -39,17 +39,7 @@
                     <th>Archived</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>Row 1, Column 1</td>
-                    <td>Row 1, Column 2</td>
-                    <td>Row 1, Column 3</td>
-                </tr>
-                <tr>
-                    <td>Row 2, Column 1</td>
-                    <td>Row 2, Column 2</td>
-                    <td>Row 2, Column 3</td>
-                </tr>
+            <tbody id="tbody">
             </tbody>
         </table>
     </div>
@@ -69,11 +59,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="noteCategory" class="form-label">Category</label>
-                            <select class="form-select" id="noteCategory">
-                                <option value="Task">Task</option>
-                                <option value="Random Thought">Random Thought</option>
-                                <option value="Idea">Idea</option>
-                            </select>
+                            <select class="form-select" id="noteCategory"></select>
                             </div>
                         <div class="mb-3">
                             <label for="noteContent" class="form-label">Note Content</label>
@@ -104,11 +90,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editNoteCategory" class="form-label">Category</label>
-                            <select class="form-select" id="editNoteCategory">
-                                <option value="Task">Task</option>
-                                <option value="Random Thought">Random Thought</option>
-                                <option value="Idea">Idea</option>
-                            </select>
+                            <select class="form-select" id="editNoteCategory"></select>
                         </div>
                         <div class="mb-3">
                             <label for="editNoteContent" class="form-label">Content</label>

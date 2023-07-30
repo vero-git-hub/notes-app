@@ -1,4 +1,30 @@
+const tableBody = document.getElementById("table-body");
+const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
+const editNoteModal = new bootstrap.Modal(document.getElementById("editNoteModal"));
+
 document.addEventListener("DOMContentLoaded", function() {
+    const categories = ["Task", "Random Thought", "Idea"];
+    const noteCategorySelect = document.getElementById("noteCategory");
+    const editNoteCategorySelect = document.getElementById("editNoteCategory");
+    const archiveTable = document.getElementById("archiveTable");
+    const archiveTableBody  = archiveTable.querySelector("tbody");
+
+    categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        noteCategorySelect.appendChild(option);
+        editNoteCategorySelect.appendChild(option.cloneNode(true));
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.textContent = category;
+
+        row.appendChild(cell);
+
+        archiveTableBody.appendChild(row);
+    });
+
     const rowData = [
         {
             name: "Row 1, Column 1",
@@ -36,12 +62,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 "bi bi-trash-fill"
             ]
         }
-        
-    ];
 
-    const tableBody = document.getElementById("table-body");
-    const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
-    const editNoteModal = new bootstrap.Modal(document.getElementById("editNoteModal"));
+    ];
 
     function createTableRow(data, index) {
         const row = document.createElement("tr");
@@ -116,8 +138,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const saveNoteButton = document.getElementById("saveNoteBtn");
     saveNoteButton.addEventListener("click", function() {
         const name = document.getElementById("noteName").value;
+        const category = noteCategorySelect.value;
         const content = document.getElementById("noteContent").value;
-        const category = document.getElementById("noteCategory").value;
 
         const currentDate = new Date();
         const createdOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -172,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const saveEditedNoteButton = document.getElementById("saveEditedNoteBtn");
     saveEditedNoteButton.addEventListener("click", function() {
         const editedName = document.getElementById("editNoteName").value;
-        const editedCategory = document.getElementById("editNoteCategory").value;
+        const editedCategory = editNoteCategorySelect.value;
         const editedContent = document.getElementById("editNoteContent").value;
 
         const rowIndex = editNoteModal._element.getAttribute("data-row-index");
