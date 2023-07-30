@@ -51,14 +51,16 @@ function updateArchiveTable() {
     categories.forEach(category => {
         const row = Array.from(archiveTableBody.children).find(row => row.cells[0].textContent === category);
         if (row) {
-            const noteCount = countNotesForCategory(category);
+            const noteCount = countNotesForCategory(category, rowData);
+            const archiveNoteCount = countNotesForCategory(category, archiveData);
             row.cells[1].textContent = noteCount;
+            row.cells[2].textContent = archiveNoteCount;
         }
     });
 }
 
-function countNotesForCategory(category) {
-    return rowData.filter(data => data.category === category).length;
+function countNotesForCategory(category, data) {
+    return data.filter(data => data.category === category).length;
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -81,20 +83,16 @@ document.addEventListener("DOMContentLoaded", function() {
         row.appendChild(cell);
 
         const noteCountCell = document.createElement("td");
-        noteCountCell.textContent = countNotesForCategory(category);
+        noteCountCell.textContent = countNotesForCategory(category, rowData);
+
+        const archivedNoteCountCell = document.createElement("td");
+        archivedNoteCountCell.textContent = countNotesForCategory(category, archiveData);
 
         row.appendChild(noteCountCell);
+        row.appendChild(archivedNoteCountCell);
 
         archiveTableBody.appendChild(row);
     });
-
-    function handleArchiveIconClick(rowIndex) {
-        const archivedRow = rowData.splice(rowIndex, 1)[0];
-        archiveData.push(archivedRow);
-
-        updateTable();
-        updateArchiveTable();
-    }
 
     function createTableRow(data, index) {
         const row = document.createElement("tr");
@@ -121,27 +119,29 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (iconClass.includes("bi-pencil-square")) {
                         icon.id = "editIcon";
                         icon.addEventListener("click", function() {
-                          const parentRow = this.closest("tr");
-                          const rowIndex = parentRow.getAttribute("data-index");
-                          const noteData = rowData[rowIndex];
+                            const parentRow = this.closest("tr");
+                            const rowIndex = parentRow.getAttribute("data-index");
+                            const noteData = rowData[rowIndex];
 
-                          document.getElementById("editNoteName").value = noteData.name;
-                          document.getElementById("editNoteCategory").value = noteData.category;
-                          document.getElementById("editNoteContent").value = noteData.content;
+                            document.getElementById("editNoteName").value = noteData.name;
+                            document.getElementById("editNoteCategory").value = noteData.category;
+                            document.getElementById("editNoteContent").value = noteData.content;
 
-                          editNoteModal._element.setAttribute("data-row-index", rowIndex);
+                            editNoteModal._element.setAttribute("data-row-index", rowIndex);
 
-                          editNoteModal.show();
+                            editNoteModal.show();
                         });
                     }
 
                     if (iconClass.includes("bi-archive-fill")) {
+                        icon.id = "archiveIcon";
                         icon.addEventListener("click", function() {
                             const parentRow = this.closest("tr");
                             const rowIndex = parentRow.getAttribute("data-index");
                             handleArchiveIconClick(rowIndex);
                         });
                     }
+                    console.log(archiveData);
 
                     cell.appendChild(icon);
                 });
@@ -158,9 +158,17 @@ document.addEventListener("DOMContentLoaded", function() {
         tableBody.innerHTML = "";
 
         rowData.forEach((data, index) => {
-          const row = createTableRow(data, index);
-          tableBody.appendChild(row);
+            const row = createTableRow(data, index);
+            tableBody.appendChild(row);
         });
+    }
+
+    function handleArchiveIconClick(rowIndex) {
+        const archivedRow = rowData.splice(rowIndex, 1)[0];
+        archiveData.push(archivedRow);
+
+        updateTable();
+        updateArchiveTable();
     }
 
     const createNoteButton = document.getElementById("create-note-btn");
@@ -190,19 +198,19 @@ document.addEventListener("DOMContentLoaded", function() {
         const formattedDates = datesArray ? datesArray.map(dateStr => {
             const dateParts = dateStr.split('/');
             return `${dateParts[0]}/${dateParts[1]}/${dateParts[2]}`;
-          }) : [];
+        }) : [];
 
         const newNote = {
-        name: name,
-        created: formattedCreated,
-        category: category,
-        content: content,
-        dates: formattedDates.join(', '),
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
+            name: name,
+            created: formattedCreated,
+            category: category,
+            content: content,
+            dates: formattedDates.join(', '),
+            icons: [
+                "bi bi-pencil-square",
+                "bi bi-archive-fill",
+                "bi bi-trash-fill"
+            ]
         };
         rowData.push(newNote);
         updateTable();
