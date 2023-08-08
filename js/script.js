@@ -3,96 +3,57 @@ const tableBody = mainTable.querySelector("tbody");
 const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
 const editNoteModal = new bootstrap.Modal(document.getElementById("editNoteModal"));
 
-const rowData = [
-    {
-        name: "Row 1, Column 1",
-        created: "Row 1, Column 2",
-        category: "Task",
-        content: "Row 1, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    },
-    {
-        name: "Row 2, Column 1",
-        created: "Row 2, Column 2",
-        category: "Task",
-        content: "Row 2, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    },
-    {
-        name: "Row 3, Column 1",
-        created: "Row 3, Column 2",
-        category: "Idea",
-        content: "Row 3, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ],
-    },
-    {
-        name: "Row 4, Column 1",
-        created: "Row 4, Column 2",
-        category: "Random Thought",
-        content: "Row 4, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    },
-    {
-        name: "Row 5, Column 1",
-        created: "Row 5, Column 2",
-        category: "Random Thought",
-        content: "Row 5, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    },
-    {
-        name: "Row 6, Column 1",
-        created: "Row 6, Column 2",
-        category: "Random Thought",
-        content: "Row 6, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    },
-    {
-        name: "Row 7, Column 1",
-        created: "Row 7, Column 2",
-        category: "Idea",
-        content: "Row 7, Column 4",
-        dates: "",
-        icons: [
-            "bi bi-pencil-square",
-            "bi bi-archive-fill",
-            "bi bi-trash-fill"
-        ]
-    }
+const names = ["Omelet", "Blog", "Programming", "Maldives"];
+const currentDate = getFormattedCurrentDate();
+const categories = ["Recipes", "Trips", "Studies", "Personal goals"];
+const contents = [
+    "Tomatoes are needed for an omelet, buy 12/10/2023",
+    "Writing about my recent trip to Italy",
+    "3 days a week to study of the new framework: 10/09/2023, 13/09/2023, 15/09/2023",
+    "Buy 5/11/2023 or 7/11/2023 tickets to the Maldives",
 ];
+
+const icons = [
+    "bi bi-pencil-square",
+    "bi bi-archive-fill",
+    "bi bi-trash-fill"
+];
+
+const rowData = [];
+categories.forEach((category, index) => {
+    const note = {
+        name: names[index],
+        created: currentDate,
+        category: category,
+        content: contents[index],
+        dates: formatDatesInContent(contents[index]),
+        icons: icons
+    };
+    rowData.push(note);
+});
+
 const archiveData = [];
 
+function getFormattedCurrentDate() {
+    const currentDate = new Date();
+    const createdOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return currentDate.toLocaleDateString('en-US', createdOptions);
+}
+
+function formatDatesInContent(content) {
+    const datesRegex = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/g;
+    const datesArray = content.match(datesRegex);
+
+    let formattedDates = datesArray ? datesArray.map(dateStr => {
+        const dateParts = dateStr.split('/');
+        return `${dateParts[0]}/${dateParts[1]}/${dateParts[2]}`;
+    }) : [];
+    formattedDates = formattedDates.join(', ');
+
+    return formattedDates;
+}
+
 function updateCountTable() {
-    const categories = ["Task", "Random Thought", "Idea"];
     const countTable = document.getElementById("countTable");
     const countTableBody = countTable.querySelector("tbody");
 
@@ -112,7 +73,6 @@ function countNotesForCategory(category, data) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const categories = ["Task", "Random Thought", "Idea"];
     const noteCategorySelect = document.getElementById("noteCategory");
     const editNoteCategorySelect = document.getElementById("editNoteCategory");
     const countTable = document.getElementById("countTable");
@@ -247,7 +207,11 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("noteContent").value = "";
 
         const noteCategorySelect = document.getElementById("noteCategory");
-        noteCategorySelect.value = "Task";
+        let noteCategoryDefault = "";
+        if (categories.length > 0) {
+            noteCategoryDefault = categories[0];
+        }
+        noteCategorySelect.value = noteCategoryDefault;
 
         addNoteModal.show();
     });
@@ -258,24 +222,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const category = noteCategorySelect.value;
         const content = document.getElementById("noteContent").value;
 
-        const currentDate = new Date();
-        const createdOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedCreated = currentDate.toLocaleDateString('en-US', createdOptions);
-
-        const datesRegex = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/g;
-        const datesArray = content.match(datesRegex);
-
-        const formattedDates = datesArray ? datesArray.map(dateStr => {
-            const dateParts = dateStr.split('/');
-            return `${dateParts[0]}/${dateParts[1]}/${dateParts[2]}`;
-        }) : [];
-
         const newNote = {
             name: name,
-            created: formattedCreated,
+            created: getFormattedCurrentDate(),
             category: category,
             content: content,
-            dates: formattedDates.join(', '),
+            dates: formatDatesInContent(content),
             icons: [
                 "bi bi-pencil-square",
                 "bi bi-archive-fill",
