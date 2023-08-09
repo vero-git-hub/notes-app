@@ -1,3 +1,5 @@
+import { getFormattedCurrentDate, formatDatesInContent } from './dateUtils.js';
+
 const mainTable = document.getElementById("mainTable");
 const tableBody = mainTable.querySelector("tbody");
 const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
@@ -12,7 +14,6 @@ const contents = [
     "3 days a week to study of the new framework: 10/09/2023, 13/09/2023, 15/09/2023",
     "Buy 5/11/2023 or 7/11/2023 tickets to the Maldives",
 ];
-
 const icons = [
     "bi bi-pencil-square",
     "bi bi-archive-fill",
@@ -20,6 +21,8 @@ const icons = [
 ];
 
 const rowData = [];
+const archiveData = [];
+
 categories.forEach((category, index) => {
     const note = {
         name: names[index],
@@ -31,27 +34,6 @@ categories.forEach((category, index) => {
     };
     rowData.push(note);
 });
-
-const archiveData = [];
-
-function getFormattedCurrentDate() {
-    const currentDate = new Date();
-    const createdOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return currentDate.toLocaleDateString('en-US', createdOptions);
-}
-
-function formatDatesInContent(content) {
-    const datesRegex = /\b\d{1,2}\/\d{1,2}\/\d{4}\b/g;
-    const datesArray = content.match(datesRegex);
-
-    let formattedDates = datesArray ? datesArray.map(dateStr => {
-        const dateParts = dateStr.split('/');
-        return `${dateParts[0]}/${dateParts[1]}/${dateParts[2]}`;
-    }) : [];
-    formattedDates = formattedDates.join(', ');
-
-    return formattedDates;
-}
 
 function updateCountTable() {
     const countTable = document.getElementById("countTable");
