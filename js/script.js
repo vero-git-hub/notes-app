@@ -1,27 +1,20 @@
 import { getFormattedCurrentDate, formatDatesInContent } from './dateUtils.js';
-
-const mainTable = document.getElementById("mainTable");
-const tableBody = mainTable.querySelector("tbody");
-const addNoteModal = new bootstrap.Modal(document.getElementById("addNoteModal"));
-const editNoteModal = new bootstrap.Modal(document.getElementById("editNoteModal"));
-
-const names = ["Omelet", "Blog", "Programming", "Maldives"];
-const currentDate = getFormattedCurrentDate();
-const categories = ["Recipes", "Trips", "Studies", "Personal goals"];
-const contents = [
-    "Tomatoes are needed for an omelet, buy 12/10/2023",
-    "Writing about my recent trip to Italy",
-    "3 days a week to study of the new framework: 10/09/2023, 13/09/2023, 15/09/2023",
-    "Buy 5/11/2023 or 7/11/2023 tickets to the Maldives",
-];
-const icons = [
-    "bi bi-pencil-square",
-    "bi bi-archive-fill",
-    "bi bi-trash-fill"
-];
+import {
+    addNoteModal,
+    archiveTable,
+    archiveTableBody, cancelEditNoteButton, cancelNoteButton,
+    categories, closeEditModalButton, closeModalButton,
+    contents,
+    countTableBody, createNoteButton, editNoteCategorySelect,
+    editNoteModal, hiddenMessage,
+    icons, mainTable,
+    names, noteCategorySelect, saveEditedNoteButton, saveNoteButton, showArchiveTableButton,
+    tableBody
+} from "./variables.js";
 
 const rowData = [];
 const archiveData = [];
+const currentDate = getFormattedCurrentDate();
 
 categories.forEach((category, index) => {
     const note = {
@@ -36,9 +29,6 @@ categories.forEach((category, index) => {
 });
 
 function updateCountTable() {
-    const countTable = document.getElementById("countTable");
-    const countTableBody = countTable.querySelector("tbody");
-
     categories.forEach(category => {
         const row = Array.from(countTableBody.children).find(row => row.cells[0].textContent === category);
         if (row) {
@@ -54,16 +44,122 @@ function countNotesForCategory(category, data) {
     return data.filter(data => data.category === category).length;
 }
 
+function createArchiveTableRow(data) {
+    const row = document.createElement("tr");
+
+    for (const key in data) {
+        if(key!=="icons"){
+            const cell = document.createElement("td");
+            cell.textContent = data[key];
+            row.appendChild(cell);
+        }
+    }
+
+    const unarchiveIcon = document.createElement("i");
+    unarchiveIcon.className = "bi bi-arrow-counterclockwise";
+    unarchiveIcon.addEventListener("click", function() {
+        const rowIndex = archiveData.indexOf(data);
+        const unarchivedRow = archiveData.splice(rowIndex, 1)[0];
+        rowData.push(unarchivedRow);
+        updateTable();
+        updateArchiveTable();
+        updateCountTable();
+    });
+
+    const iconCell = document.createElement("td");
+    iconCell.appendChild(unarchiveIcon);
+    row.appendChild(iconCell);
+
+    return row;
+}
+
+function updateArchiveTable() {
+    archiveTableBody.innerHTML = "";
+
+    archiveData.forEach((data, index) => {
+        const row = createArchiveTableRow(data, index);
+        archiveTableBody.appendChild(row);
+    });
+}
+
+function createTableRow(data, index) {
+    const row = document.createElement("tr");
+    row.setAttribute("data-index", index);
+
+    for (const key in data) {
+        const cell = document.createElement("td");
+
+        if (key === "icons") {
+            data[key].forEach(iconClass => {
+                const icon = document.createElement("i");
+                icon.className = iconClass;
+
+                if (iconClass.includes("bi-trash-fill")) {
+                    icon.id = "deleteIcon";
+                    icon.addEventListener("click", function() {
+                        const parentRow = this.closest("tr");
+                        const rowIndex = parentRow.getAttribute("data-index");
+                        rowData.splice(rowIndex, 1);
+                        updateTable();
+                    });
+                }
+
+                if (iconClass.includes("bi-pencil-square")) {
+                    icon.id = "editIcon";
+                    icon.addEventListener("click", function() {
+                        const parentRow = this.closest("tr");
+                        const rowIndex = parentRow.getAttribute("data-index");
+                        const noteData = rowData[rowIndex];
+
+                        document.getElementById("editNoteName").value = noteData.name;
+                        document.getElementById("editNoteCategory").value = noteData.category;
+                        document.getElementById("editNoteContent").value = noteData.content;
+
+                        editNoteModal._element.setAttribute("data-row-index", rowIndex);
+
+                        editNoteModal.show();
+                    });
+                }
+
+                if (iconClass.includes("bi-archive-fill")) {
+                    icon.id = "archiveIcon";
+                    icon.addEventListener("click", function() {
+                        const parentRow = this.closest("tr");
+                        const rowIndex = parentRow.getAttribute("data-index");
+                        handleArchiveIconClick(rowIndex);
+                    });
+                }
+
+                cell.appendChild(icon);
+            });
+        } else {
+            cell.textContent = data[key];
+        }
+
+        row.appendChild(cell);
+    }
+    return row;
+}
+
+function updateTable() {
+    tableBody.innerHTML = "";
+
+    rowData.forEach((data, index) => {
+        const row = createTableRow(data, index);
+        tableBody.appendChild(row);
+    });
+}
+
+function handleArchiveIconClick(rowIndex) {
+    const archivedRow = rowData.splice(rowIndex, 1)[0];
+    archiveData.push(archivedRow);
+
+    updateTable();
+    updateArchiveTable();
+    updateCountTable();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
-    const noteCategorySelect = document.getElementById("noteCategory");
-    const editNoteCategorySelect = document.getElementById("editNoteCategory");
-    const countTable = document.getElementById("countTable");
-    const countTableBody  = countTable.querySelector("tbody");
-
-    const showArchiveTableButton = document.getElementById("showArchiveTable");
-    const archiveTable = document.getElementById("archiveTable");
-    const hiddenMessage = document.getElementById("hiddenMessage");
-
     let isArchiveTableVisible = false;
 
     showArchiveTableButton.addEventListener("click", function() {
@@ -106,84 +202,6 @@ document.addEventListener("DOMContentLoaded", function() {
         countTableBody.appendChild(row);
     });
 
-    function createTableRow(data, index) {
-        const row = document.createElement("tr");
-        row.setAttribute("data-index", index);
-
-        for (const key in data) {
-            const cell = document.createElement("td");
-
-            if (key === "icons") {
-                data[key].forEach(iconClass => {
-                    const icon = document.createElement("i");
-                    icon.className = iconClass;
-
-                    if (iconClass.includes("bi-trash-fill")) {
-                        icon.id = "deleteIcon";
-                        icon.addEventListener("click", function() {
-                            const parentRow = this.closest("tr");
-                            const rowIndex = parentRow.getAttribute("data-index");
-                            rowData.splice(rowIndex, 1);
-                            updateTable();
-                        });
-                    }
-
-                    if (iconClass.includes("bi-pencil-square")) {
-                        icon.id = "editIcon";
-                        icon.addEventListener("click", function() {
-                            const parentRow = this.closest("tr");
-                            const rowIndex = parentRow.getAttribute("data-index");
-                            const noteData = rowData[rowIndex];
-
-                            document.getElementById("editNoteName").value = noteData.name;
-                            document.getElementById("editNoteCategory").value = noteData.category;
-                            document.getElementById("editNoteContent").value = noteData.content;
-
-                            editNoteModal._element.setAttribute("data-row-index", rowIndex);
-
-                            editNoteModal.show();
-                        });
-                    }
-
-                    if (iconClass.includes("bi-archive-fill")) {
-                        icon.id = "archiveIcon";
-                        icon.addEventListener("click", function() {
-                            const parentRow = this.closest("tr");
-                            const rowIndex = parentRow.getAttribute("data-index");
-                            handleArchiveIconClick(rowIndex);
-                        });
-                    }
-
-                    cell.appendChild(icon);
-                });
-            } else {
-                cell.textContent = data[key];
-            }
-
-            row.appendChild(cell);
-        }
-        return row;
-    }
-
-    function updateTable() {
-        tableBody.innerHTML = "";
-
-        rowData.forEach((data, index) => {
-            const row = createTableRow(data, index);
-            tableBody.appendChild(row);
-        });
-    }
-
-    function handleArchiveIconClick(rowIndex) {
-        const archivedRow = rowData.splice(rowIndex, 1)[0];
-        archiveData.push(archivedRow);
-
-        updateTable();
-        updateArchiveTable();
-        updateCountTable();
-    }
-
-    const createNoteButton = document.getElementById("create-note-btn");
     createNoteButton.addEventListener("click", function() {
         document.getElementById("noteName").value = "";
         document.getElementById("noteContent").value = "";
@@ -198,7 +216,6 @@ document.addEventListener("DOMContentLoaded", function() {
         addNoteModal.show();
     });
 
-    const saveNoteButton = document.getElementById("saveNoteBtn");
     saveNoteButton.addEventListener("click", function() {
         const name = document.getElementById("noteName").value;
         const category = noteCategorySelect.value;
@@ -222,27 +239,22 @@ document.addEventListener("DOMContentLoaded", function() {
         addNoteModal.hide();
     });
 
-    const cancelNoteButton = document.getElementById("cancelNoteBtn");
     cancelNoteButton.addEventListener("click", function() {
         addNoteModal.hide();
     });
 
-    const closeModalButton = document.getElementById("closeModalButton");
     closeModalButton.addEventListener('click', function() {
         addNoteModal.hide();
     })
 
-    const cancelEditNoteButton = document.getElementById("cancelEditNoteButton");
     cancelEditNoteButton.addEventListener("click", function() {
         editNoteModal.hide();
     });
 
-    const closeEditModalButton =  document.getElementById("closeEditModalButton");
     closeEditModalButton.addEventListener('click', function() {
         editNoteModal.hide();
     })
 
-    const saveEditedNoteButton = document.getElementById("saveEditedNoteBtn");
     saveEditedNoteButton.addEventListener("click", function() {
         const editedName = document.getElementById("editNoteName").value;
         const editedCategory = editNoteCategorySelect.value;
@@ -275,48 +287,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const observerConfig = { childList: true, subtree: true };
     observer.observe(mainTable, observerConfig);
-
-    function createArchiveTableRow(data, index) {
-        const row = document.createElement("tr");
-
-        for (const key in data) {
-            if(key!=="icons"){
-                const cell = document.createElement("td");
-                cell.textContent = data[key];
-                row.appendChild(cell);
-            }
-
-        }
-
-        const unarchiveIcon = document.createElement("i");
-        unarchiveIcon.className = "bi bi-arrow-counterclockwise";
-        unarchiveIcon.addEventListener("click", function() {
-            const rowIndex = archiveData.indexOf(data);
-            const unarchivedRow = archiveData.splice(rowIndex, 1)[0];
-            rowData.push(unarchivedRow);
-            updateTable();
-            updateArchiveTable();
-            updateCountTable();
-        });
-
-        const iconCell = document.createElement("td");
-        iconCell.appendChild(unarchiveIcon);
-        row.appendChild(iconCell);
-
-        return row;
-    }
-
-    function updateArchiveTable() {
-        const archiveTable = document.getElementById("archiveTable");
-        const archiveTableBody = archiveTable.querySelector("tbody");
-
-        archiveTableBody.innerHTML = "";
-
-        archiveData.forEach((data, index) => {
-            const row = createArchiveTableRow(data, index);
-            archiveTableBody.appendChild(row);
-        });
-    }
 
     updateTable();
     updateCountTable();
