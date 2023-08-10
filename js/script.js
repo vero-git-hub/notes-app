@@ -18,6 +18,8 @@ import {
     updateTable
 } from './functions.js';
 
+import { validateNoteFields } from './validation.js';
+
 export const rowData = [];
 export const archiveData = [];
 const currentDate = getFormattedCurrentDate();
@@ -92,22 +94,11 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     saveNoteButton.addEventListener("click", function() {
-        const name = document.getElementById("noteName").value;
+        const name = document.getElementById("noteName").value.trim();
         const category = noteCategorySelect.value;
-        const content = document.getElementById("noteContent").value;
+        const content = document.getElementById("noteContent").value.trim();
 
-        const noteName = name.trim();
-        const noteContent = content.trim();
-
-        if (!noteName || !noteContent) {
-            alert("Please fill in both name and content fields.");
-            return;
-        }
-
-        const containsOnlyNumbersForName = /^\d+$/.test(noteName);
-        const containsOnlyNumbersForContent = /^\d+$/.test(noteContent);
-        if (containsOnlyNumbersForName || containsOnlyNumbersForContent) {
-            alert("Name and content cannot consist of only numbers.");
+        if (!validateNoteFields(name, content)) {
             return;
         }
 
@@ -142,9 +133,13 @@ document.addEventListener("DOMContentLoaded", function() {
     })
 
     saveEditedNoteButton.addEventListener("click", function() {
-        const editedName = document.getElementById("editNoteName").value;
+        const editedName = document.getElementById("editNoteName").value.trim();
         const editedCategory = editNoteCategorySelect.value;
-        const editedContent = document.getElementById("editNoteContent").value;
+        const editedContent = document.getElementById("editNoteContent").value.trim();
+
+        if (!validateNoteFields(editedName, editedContent)) {
+            return;
+        }
 
         const rowIndex = editNoteModal._element.getAttribute("data-row-index");
 
