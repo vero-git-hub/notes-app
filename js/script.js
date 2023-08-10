@@ -96,6 +96,21 @@ document.addEventListener("DOMContentLoaded", function() {
         const category = noteCategorySelect.value;
         const content = document.getElementById("noteContent").value;
 
+        const noteName = name.trim();
+        const noteContent = content.trim();
+
+        if (!noteName || !noteContent) {
+            alert("Please fill in both name and content fields.");
+            return;
+        }
+
+        const containsOnlyNumbersForName = /^\d+$/.test(noteName);
+        const containsOnlyNumbersForContent = /^\d+$/.test(noteContent);
+        if (containsOnlyNumbersForName || containsOnlyNumbersForContent) {
+            alert("Name and content cannot consist of only numbers.");
+            return;
+        }
+
         const newNote = {
             name: name,
             created: getFormattedCurrentDate(),
